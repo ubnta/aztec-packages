@@ -59,9 +59,18 @@ export class BufferReader {
    */
   public readNumber(): number {
     this.#rangeCheck(4);
+  
+    const uint8arr = (this.buffer instanceof Uint8Array)
+      ? this.buffer
+      : new Uint8Array(this.buffer.buffer, this.buffer.byteOffset, this.buffer.byteLength);
+  
+    const view = new DataView(uint8arr.buffer, uint8arr.byteOffset, uint8arr.byteLength);
+    const num = view.getUint32(this.index, false); // false = big-endian
+  
     this.index += 4;
-    return this.buffer.readUint32BE(this.index - 4);
+    return num;
   }
+
 
   /**
    * Reads `count` 32-bit unsigned integers from the buffer at the current index position.
